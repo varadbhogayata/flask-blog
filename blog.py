@@ -5,13 +5,19 @@ from werkzeug import secure_filename
 from datetime import datetime
 import json
 import os
+import logging
 import math
 
 with open('config.json', 'r') as c:
     params = json.load(c)['params']
 
 app = Flask(__name__)
+
+app.logger.addHandler(logging.StreamHandler(sys.stdout))
+app.logger.setLevel(logging.ERROR)
+
 app.secret_key = 'super-secret-key'
+
 # app.config['SESSION_TYPE'] = 'filesystem'
 
 # sess.init_app(app)
@@ -26,17 +32,15 @@ app.secret_key = 'super-secret-key'
 # mail = Mail(app)
 
 if params['local_server']:
-    app.config['SQLALCHEMY_DATABASE_URI'] = params['local_uri']
+    app.config['SQLALCHEMY_DATABASE_URI'] = "postgres://bcowlfcvbfungl:3397db728933b1336930480c1d4b998b0b893625524a771f9772aa80dcea7d71@ec2-52-87-135-240.compute-1.amazonaws.com:5432/d76ut71fodb9or"
 else:
-    app.config['SQLALCHEMY_DATABASE_URI'] = params['prod_uri']
+    app.config['SQLALCHEMY_DATABASE_URI'] = "postgres://bcowlfcvbfungl:3397db728933b1336930480c1d4b998b0b893625524a771f9772aa80dcea7d71@ec2-52-87-135-240.compute-1.amazonaws.com:5432/d76ut71fodb9or"
 
 db = SQLAlchemy(app)
 
 
 class Contacts(db.Model):
-    """
-    sno, name, mob_num, email, msg, date
-    """
+
     sno = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(80), nullable=False)
     email = db.Column(db.String(20), nullable=False)
@@ -44,11 +48,8 @@ class Contacts(db.Model):
     msg = db.Column(db.String(120), nullable=False)
     date = db.Column(db.String(12), nullable=True)
 
-
 class Posts(db.Model):
-    """
-    sno, title, slug, content, date
-    """
+    
     sno = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(30), nullable=False)
     tagline = db.Column(db.String(500), nullable=False)
@@ -62,17 +63,19 @@ class Posts(db.Model):
 def home():
     posts = Posts.query.filter_by().all()
     last = math.ceil(len(posts) / int(params['no_of_posts']))
-    print(f'type last: {type(last)}')
+    # print(f'type last: {type(last)}')
     # [0:params['no_of_posts']]
     page = request.args.get('page')
     # print(f'page: {page}, type: {type(page)}')
     if not str(page).isnumeric():
         page = 1
+        
     page = int(page)
-    print(f'page type: {type(page)}')
-    print(f'params[no of posts] type: {type(params["no_of_posts"])}')
+    # print(f'page type: {type(page)}')
+    # print(f'params[no of posts] type: {type(params["no_of_posts"])}')
     posts = posts[(page - 1) * int(params['no_of_posts']): (page - 1) * int(params['no_of_posts']) + int(
         params['no_of_posts'])]
+    
     if page == 1:
         prev = "#"
         next = '/?page=' + str(page + 1)
@@ -83,15 +86,6 @@ def home():
     else:
         prev = '/?page=' + str(page - 1)
         next = '/?page=' + str(page + 1)
-    """
-    Pagination Logic:
-    1. first page --> prev url = None, next url = page + 1
-    2. middle
-    prev = page - 1, next = page + 1
-    3. Last page
-    prev = page - 1
-    next page = None
-    """
 
     return render_template('index.html', params=params, posts=posts, prev=prev, next=next)
 
@@ -199,4 +193,4 @@ def post_route(post_slug):
 
 
 if __name__ == "__main__":
-    app.run(debug=False)
+    app.run()
