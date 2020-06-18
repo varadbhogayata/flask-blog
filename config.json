@@ -3,7 +3,7 @@
   {
     "local_server": "False",
     "local_uri": "mysql://root:@localhost/blogdb",
-    "prod_uri": "postgres://bmldsufymzmqxz:7d2293cc9be81d595fa9cbaf4de3913626ca1c2f04a4bf5da242424fbcd1b8bf@ec2-34-224-229-81.compute-1.amazonaws.com:5432/d6fj13j55b8npg",
+    "prod_uri": "postgres://bcowlfcvbfungl:3397db728933b1336930480c1d4b998b0b893625524a771f9772aa80dcea7d71@ec2-52-87-135-240.compute-1.amazonaws.com:5432/d76ut71fodb9or",
     "linkedin_url": "https://www.linkedin.com/in/varadbhogayata/",
     "github_url": "https://github.com/varadbhogayata",
     "title": "Blogs",
