@@ -15,8 +15,8 @@
     "about_text": "Hi I am Varad Bhogayata!",
     "no_of_posts": 3,
     "login_image": "login.svg",
-    "admin_user": "",
-    "admin_password": ""
+    "admin_user": "flask-blog",
+    "admin_password": "blog"
 
   }
 }
