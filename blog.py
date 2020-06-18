@@ -19,10 +19,10 @@ app.logger.setLevel(logging.ERROR)
 app.secret_key = 'this-really-needs-to-be-changed'
 
 if params['local_server']:
-    app.config['SQLALCHEMY_DATABASE_URI'] = params['local_uri']
+    app.config['SQLALCHEMY_DATABASE_URI'] = "postgres://bcowlfcvbfungl:3397db728933b1336930480c1d4b998b0b893625524a771f9772aa80dcea7d71@ec2-52-87-135-240.compute-1.amazonaws.com:5432/d76ut71fodb9or"
     # app.logger.info('Local Server')
 else:
-    app.config['SQLALCHEMY_DATABASE_URI'] = params['prod_uri']
+    app.config['SQLALCHEMY_DATABASE_URI'] = "postgres://bcowlfcvbfungl:3397db728933b1336930480c1d4b998b0b893625524a771f9772aa80dcea7d71@ec2-52-87-135-240.compute-1.amazonaws.com:5432/d76ut71fodb9or"
     # app.logger.info('On Prod Server')
     
 db = SQLAlchemy(app)
