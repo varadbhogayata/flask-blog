@@ -20,10 +20,10 @@ app.secret_key = 'this-really-needs-to-be-changed'
 
 if params['local_server']:
     app.config['SQLALCHEMY_DATABASE_URI'] = params['local_uri']
-    app.logger.info('Local Server')
+    # app.logger.info('Local Server')
 else:
     app.config['SQLALCHEMY_DATABASE_URI'] = params['prod_uri']
-    app.logger.info('On Prod Server')
+    # app.logger.info('On Prod Server')
     
 db = SQLAlchemy(app)
 
@@ -51,7 +51,7 @@ class Posts(db.Model):
 
 db.create_all()
 db.session.commit()
-app.logger.info('Tables have been created!')
+# app.logger.info('Tables have been created!')
 
 @app.route('/')
 def home():
