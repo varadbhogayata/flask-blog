@@ -15,15 +15,16 @@ app.secret_key = 'super-secret-key'
 # app.config['SESSION_TYPE'] = 'filesystem'
 
 # sess.init_app(app)
-app.config['UPLOAD_FOLDER'] = params['upload_location']
-app.config.update(
-    MAIL_SERVER='smtp.gmail.com',
-    MAIL_PORT='465',
-    MAIL_USE_SSL=True,
-    MAIL_USERNAME=params['gmail-user'],
-    MAIL_PASSWORD=params['gmail-password']
-)
-mail = Mail(app)
+# app.config['UPLOAD_FOLDER'] = params['upload_location']
+# app.config.update(
+#     MAIL_SERVER='smtp.gmail.com',
+#     MAIL_PORT='465',
+#     MAIL_USE_SSL=True,
+#     MAIL_USERNAME=params['gmail-user'],
+#     MAIL_PASSWORD=params['gmail-password']
+# )
+# mail = Mail(app)
+
 if params['local_server']:
     app.config['SQLALCHEMY_DATABASE_URI'] = params['local_uri']
 else:
@@ -198,4 +199,4 @@ def post_route(post_slug):
 
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(debug=False)
