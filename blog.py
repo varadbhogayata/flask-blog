@@ -1,11 +1,12 @@
 from flask import Flask, render_template, request, redirect, session
 from flask_sqlalchemy import SQLAlchemy
-from flask_mail import Mail
+# from flask_mail import Mail
 from werkzeug import secure_filename
 from datetime import datetime
 import json
 import os
 import logging
+import sys
 import math
 
 with open('config.json', 'r') as c:
