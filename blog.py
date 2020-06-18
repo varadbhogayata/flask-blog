@@ -1,8 +1,5 @@
 from flask import Flask, render_template, request, redirect, session
 from flask_sqlalchemy import SQLAlchemy
-# from flask_migrate import Migrate
-
-# from flask_mail import Mail
 from werkzeug import secure_filename
 from datetime import datetime
 import json
@@ -21,26 +18,14 @@ app.logger.setLevel(logging.ERROR)
 
 app.secret_key = 'this-really-needs-to-be-changed'
 
-# app.config['SESSION_TYPE'] = 'filesystem'
-
-# sess.init_app(app)
-# app.config['UPLOAD_FOLDER'] = params['upload_location']
-# app.config.update(
-#     MAIL_SERVER='smtp.gmail.com',
-#     MAIL_PORT='465',
-#     MAIL_USE_SSL=True,
-#     MAIL_USERNAME=params['gmail-user'],
-#     MAIL_PASSWORD=params['gmail-password']
-# )
-# mail = Mail(app)
-
 if params['local_server']:
-    app.config['SQLALCHEMY_DATABASE_URI'] = "postgres://bcowlfcvbfungl:3397db728933b1336930480c1d4b998b0b893625524a771f9772aa80dcea7d71@ec2-52-87-135-240.compute-1.amazonaws.com:5432/d76ut71fodb9or"
+    app.config['SQLALCHEMY_DATABASE_URI'] = params['local_uri']
+    app.logger.info('Local Server')
 else:
-    app.config['SQLALCHEMY_DATABASE_URI'] = "postgres://bcowlfcvbfungl:3397db728933b1336930480c1d4b998b0b893625524a771f9772aa80dcea7d71@ec2-52-87-135-240.compute-1.amazonaws.com:5432/d76ut71fodb9or"
-
+    app.config['SQLALCHEMY_DATABASE_URI'] = params['prod_uri']
+    app.logger.info('On Prod Server')
+    
 db = SQLAlchemy(app)
-# migrate = Migrate(app, db)
 
 class Contacts(db.Model):
 
@@ -66,21 +51,17 @@ class Posts(db.Model):
 
 db.create_all()
 db.session.commit()
+app.logger.info('Tables have been created!')
 
 @app.route('/')
 def home():
     posts = Posts.query.filter_by().all()
     last = math.ceil(len(posts) / int(params['no_of_posts']))
-    # print(f'type last: {type(last)}')
-    # [0:params['no_of_posts']]
     page = request.args.get('page')
-    # print(f'page: {page}, type: {type(page)}')
     if not str(page).isnumeric():
         page = 1
         
     page = int(page)
-    # print(f'page type: {type(page)}')
-    # print(f'params[no of posts] type: {type(params["no_of_posts"])}')
     posts = posts[(page - 1) * int(params['no_of_posts']): (page - 1) * int(params['no_of_posts']) + int(
         params['no_of_posts'])]
     
@@ -113,7 +94,6 @@ def edit(sno):
             content = request.form.get('content')
             img_file = request.form.get('img_file')
             date = datetime.now()
-            # print(f'sno: {sno}')
             if sno == '0':
                 post = Posts(title=title, slug=slug, content=content, img_file=img_file, tagline=tagline, date=date)
                 db.session.add(post)
@@ -186,9 +166,6 @@ def contact():
         entry = Contacts(name=name, mob_num=phone, email=email, msg=message, date=datetime.now())
         db.session.add(entry)
         db.session.commit()
-        # mail.send_message('New message from: ' + name,
-        #                   sender=email, recipients=[params['gmail-user']],
-        #                   body=message + "\n" + phone)
     return render_template('contact.html', params=params)
 
 
@@ -196,7 +173,6 @@ def contact():
 def post_route(post_slug):
     # fetch post from db
     post = Posts.query.filter_by(slug=post_slug).first()
-    # print(post)
     return render_template('post.html', params=params, post=post)
 
 
