@@ -1,6 +1,6 @@
 from flask import Flask, render_template, request, redirect, session
 from flask_sqlalchemy import SQLAlchemy
-from flask_migrate import Migrate
+# from flask_migrate import Migrate
 
 # from flask_mail import Mail
 from werkzeug import secure_filename
@@ -40,7 +40,7 @@ else:
     app.config['SQLALCHEMY_DATABASE_URI'] = "postgres://bcowlfcvbfungl:3397db728933b1336930480c1d4b998b0b893625524a771f9772aa80dcea7d71@ec2-52-87-135-240.compute-1.amazonaws.com:5432/d76ut71fodb9or"
 
 db = SQLAlchemy(app)
-migrate = Migrate(app, db)
+# migrate = Migrate(app, db)
 
 class Contacts(db.Model):
 
@@ -64,6 +64,8 @@ class Posts(db.Model):
     date = db.Column(db.String(12), nullable=True)
     img_file = db.Column(db.String(12), nullable=True)
 
+db.create_all()
+db.session.commit()
 
 @app.route('/')
 def home():
