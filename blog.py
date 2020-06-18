@@ -1,5 +1,7 @@
 from flask import Flask, render_template, request, redirect, session
 from flask_sqlalchemy import SQLAlchemy
+from flask_migrate import Migrate
+
 # from flask_mail import Mail
 from werkzeug import secure_filename
 from datetime import datetime
@@ -17,7 +19,7 @@ app = Flask(__name__)
 app.logger.addHandler(logging.StreamHandler(sys.stdout))
 app.logger.setLevel(logging.ERROR)
 
-app.secret_key = 'super-secret-key'
+app.secret_key = 'this-really-needs-to-be-changed'
 
 # app.config['SESSION_TYPE'] = 'filesystem'
 
@@ -38,7 +40,7 @@ else:
     app.config['SQLALCHEMY_DATABASE_URI'] = "postgres://bcowlfcvbfungl:3397db728933b1336930480c1d4b998b0b893625524a771f9772aa80dcea7d71@ec2-52-87-135-240.compute-1.amazonaws.com:5432/d76ut71fodb9or"
 
 db = SQLAlchemy(app)
-
+migrate = Migrate(app, db)
 
 class Contacts(db.Model):
 
@@ -49,6 +51,9 @@ class Contacts(db.Model):
     msg = db.Column(db.String(120), nullable=False)
     date = db.Column(db.String(12), nullable=True)
 
+    def __repr__(self):
+        return f'<Contact {self.name}>'
+    
 class Posts(db.Model):
     
     sno = db.Column(db.Integer, primary_key=True)
