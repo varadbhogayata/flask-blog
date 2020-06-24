@@ -1,57 +1,88 @@
 from flask import Flask, render_template, request, redirect, session
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy import Column, String, Integer, DateTime
+from flask_migrate import Migrate
 from werkzeug import secure_filename
 from datetime import datetime
 import json
 import os
-import logging
-import sys
 import math
 
-with open('config.json', 'r') as c:
-    params = json.load(c)['params']
+with open('info.json', 'r') as info:
+    params = json.load(info)['params']
 
 app = Flask(__name__)
-
-app.logger.addHandler(logging.StreamHandler(sys.stdout))
-app.logger.setLevel(logging.ERROR)
-
 app.secret_key = 'this-really-needs-to-be-changed'
 
-if params['local_server']:
-    app.config['SQLALCHEMY_DATABASE_URI'] = "postgres://bcowlfcvbfungl:3397db728933b1336930480c1d4b998b0b893625524a771f9772aa80dcea7d71@ec2-52-87-135-240.compute-1.amazonaws.com:5432/d76ut71fodb9or"
-    # app.logger.info('Local Server')
-else:
-    app.config['SQLALCHEMY_DATABASE_URI'] = "postgres://bcowlfcvbfungl:3397db728933b1336930480c1d4b998b0b893625524a771f9772aa80dcea7d71@ec2-52-87-135-240.compute-1.amazonaws.com:5432/d76ut71fodb9or"
-    # app.logger.info('On Prod Server')
-    
+database_url = os.getenv(
+    'DATABASE_URL',
+    default='postgresql://postgres:12345@localhost:5432/flask-blog-db',  # E.g., for local dev
+)
+
+# app.config['SQLALCHEMY_DATABASE_URI'] = "postgres://bcowlfcvbfungl:3397db728933b1336930480c1d4b998b0b893625524a771f9772aa80dcea7d71@ec2-52-87-135-240.compute-1.amazonaws.com:5432/d76ut71fodb9or"
+
+app.config['SQLALCHEMY_DATABASE_URI'] = database_url
+
 db = SQLAlchemy(app)
+migrate = Migrate(app, db)
 
 class Contacts(db.Model):
+    __tablename__ = 'contacts'
 
-    sno = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(80), nullable=False)
-    email = db.Column(db.String(20), nullable=False)
-    mob_num = db.Column(db.String(12), unique=True, nullable=False)
-    msg = db.Column(db.String(120), nullable=False)
-    date = db.Column(db.String(12), nullable=True)
+    sno = Column(Integer, primary_key=True)
+    name = Column(String(80), nullable=False)
+    email = Column(String(20), nullable=False)
+    mob_num = Column(String(12), unique=True, nullable=False)
+    msg = Column(String(120), nullable=False)
+    date = Column(DateTime, nullable=True)
+
+    def __init__(self, name, email, mob_num, msg, date):
+        self.name = name
+        self.email = email
+        self.mob_num = mob_num
+        self.msg = msg
+        self.date = date
 
     def __repr__(self):
-        return f'<Contact {self.name}>'
-    
-class Posts(db.Model):
-    
-    sno = db.Column(db.Integer, primary_key=True)
-    title = db.Column(db.String(30), nullable=False)
-    tagline = db.Column(db.String(500), nullable=False)
-    slug = db.Column(db.String(30), nullable=False)
-    content = db.Column(db.String(500), nullable=False)
-    date = db.Column(db.String(12), nullable=True)
-    img_file = db.Column(db.String(12), nullable=True)
+        return '<sno {}>'.format(self.sno)
 
-db.create_all()
-db.session.commit()
+
+class Posts(db.Model):
+    __tablename__ = 'posts'
+
+    sno = Column(Integer, primary_key=True)
+    title = Column(String(30), nullable=False)
+    tagline = Column(String(500), nullable=False)
+    slug = Column(String(30), nullable=False)
+    content = Column(String(500), nullable=False)
+    date = Column(DateTime, nullable=True)
+    img_file = Column(String(12), nullable=True)
+
+    def __init__(self, title, tagline, slug, content, date, img_file):
+        self.title = title
+        self.tagline = tagline
+        self.slug = slug
+        self.content = content
+        self.date = date
+        self.img_file = img_file
+
+    def __repr__(self):
+        return '<sno {}>'.format(self.sno)
+
+
+"""
+heroku run python
+>>> from app import db
+>>> db.create_all()
+>>> db.session.commit()
+"""
+
+
+# if not params['local_server']:
+# db.create_all()
+# db.session.commit()
 # app.logger.info('Tables have been created!')
+
 
 @app.route('/')
 def home():
@@ -60,11 +91,11 @@ def home():
     page = request.args.get('page')
     if not str(page).isnumeric():
         page = 1
-        
+
     page = int(page)
     posts = posts[(page - 1) * int(params['no_of_posts']): (page - 1) * int(params['no_of_posts']) + int(
         params['no_of_posts'])]
-    
+
     if page == 1:
         prev = "#"
         next = '/?page=' + str(page + 1)
@@ -94,6 +125,9 @@ def edit(sno):
             content = request.form.get('content')
             img_file = request.form.get('img_file')
             date = datetime.now()
+            print(f'current date: {date}')
+            # base64.b64decode(date)
+            print(f'after base64: current date: {date}')
             if sno == '0':
                 post = Posts(title=title, slug=slug, content=content, img_file=img_file, tagline=tagline, date=date)
                 db.session.add(post)
@@ -106,6 +140,7 @@ def edit(sno):
                 post.tagline = tagline
                 post.img_file = img_file
                 post.date = date
+                print(f'current date: {date}')
                 db.session.commit()
                 return redirect('/edit/' + sno)
         post = Posts.query.filter_by(sno=sno).first()
