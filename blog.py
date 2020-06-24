@@ -18,12 +18,10 @@ database_url = os.getenv(
     'DATABASE_URL',
     default='postgresql://postgres:12345@localhost:5432/flask-blog-db',  # E.g., for local dev
 )
-
-# app.config['SQLALCHEMY_DATABASE_URI'] = "postgres://bcowlfcvbfungl:3397db728933b1336930480c1d4b998b0b893625524a771f9772aa80dcea7d71@ec2-52-87-135-240.compute-1.amazonaws.com:5432/d76ut71fodb9or"
-
 app.config['SQLALCHEMY_DATABASE_URI'] = database_url
 
 db = SQLAlchemy(app)
+print(f'#### db.engine.url ###: {db.engine.url}')
 migrate = Migrate(app, db)
 
 class Contacts(db.Model):
@@ -79,8 +77,8 @@ heroku run python
 
 
 # if not params['local_server']:
-# db.create_all()
-# db.session.commit()
+db.create_all()
+db.session.commit()
 # app.logger.info('Tables have been created!')
 
 

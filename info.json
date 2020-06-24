@@ -1,0 +1,22 @@
+{
+  "params":
+  {
+    "local_server": "False",
+    "local_uri": "mysql://root:@localhost/blogdb",
+    "prod_uri": "postgres://bcowlfcvbfungl:3397db728933b1336930480c1d4b998b0b893625524a771f9772aa80dcea7d71@ec2-52-87-135-240.compute-1.amazonaws.com:5432/d76ut71fodb9or",
+    "linkedin_url": "https://www.linkedin.com/in/varadbhogayata/",
+    "github_url": "https://github.com/varadbhogayata",
+    "title": "BlogHub",
+    "blog_title": "BlogHub",
+    "blog_name": "BlogHub",
+    "blog_subheading": "Amazing articles just one click away!",
+    "gmail-user": "username@gmail.com",
+    "gmail-password": "gmail-password",
+    "about_text": "Hi I am Varad Bhogayata!",
+    "no_of_posts": 3,
+    "login_image": "login.svg",
+    "admin_user": "flask-blog",
+    "admin_password": "blog"
+
+  }
+}
