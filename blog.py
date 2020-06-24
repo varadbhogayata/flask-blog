@@ -1,6 +1,6 @@
 from flask import Flask, render_template, request, redirect, session
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import Column, String, Integer, DateTime
+from sqlalchemy import Column, String, Integer, DateTime, Text
 from flask_migrate import Migrate
 from werkzeug import secure_filename
 from datetime import datetime
@@ -52,7 +52,7 @@ class Posts(db.Model):
     title = Column(String(30), nullable=False)
     tagline = Column(String(500), nullable=False)
     slug = Column(String(30), nullable=False)
-    content = Column(String(500), nullable=False)
+    content = Column(Text, nullable=False)
     date = Column(DateTime, nullable=True)
     img_file = Column(String(12), nullable=True)
 
