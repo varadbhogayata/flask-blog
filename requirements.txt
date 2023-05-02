@@ -1,5 +1,5 @@
 gunicorn==20.0.4
-Flask==1.1.2
+Flask==2.2.5
 Flask-Mail==0.9.1
 Flask-Migrate==2.5.3
 Flask-Session==0.3.2
